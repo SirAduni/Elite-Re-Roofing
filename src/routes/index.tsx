@@ -302,15 +302,31 @@ function CTA() {
   const [form, setForm] = useState({ name: "", phone: "", email: "", suburb: "", service: "Full reroof", message: "" });
   const [status, setStatus] = useState<"idle" | "sent">("idle");
 
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const subject = encodeURIComponent(`Quote request — ${form.service} (${form.name})`);
-    const body = encodeURIComponent(
-      `Name: ${form.name}\nPhone: ${form.phone}\nEmail: ${form.email}\nSuburb: ${form.suburb}\nService: ${form.service}\n\nDetails:\n${form.message}`,
-    );
-    window.location.href = `mailto:elitereroofingchch@gmail.com?subject=${subject}&body=${body}`;
+const onSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    await fetch("https://formspree.io/f/xnjkzvno", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        suburb: form.suburb,
+        service: form.service,
+        message: form.message,
+      }),
+    });
+
     setStatus("sent");
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   const input = "w-full bg-[var(--bone)] text-[var(--ink)] border-2 border-transparent focus:border-[var(--ink)] rounded-md px-4 py-3 text-sm outline-none placeholder:text-[var(--ink)]/50";
 
